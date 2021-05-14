@@ -7,7 +7,12 @@ Teilnummer 6N0920804D, wobei es mindestens zwei Versionen des Tachos mit der
 dieser Teilnummer gibt, die eingebaut zwar gleich aussehen, aber ansonsten
 komplett unterschiedliche Tachos sind. Ich weiß nicht, ob es noch andere
 Versionen gibt. Im Folgenden werde ich die mir bekannten zwei Version
-beschreiben, welche ich mit "Version 1" und "Version 2" bezeichne.
+beschreiben, welche ich mit "Version 1" und "Version 2" bezeichne. Version 1
+kann nach dem Öffnen des Gehäuses anhand der zusammenhängenden Teile
+links/rechts (Drehzahlmesser/Tacho) erkannt werden. Bei Version 2 sind die
+beiden Teile unabhängig voneinander. Das zusammengebaute Tacho hat bei Version
+2 bis auf die Öffnung für den Summer eine flache Rückseite. Bei Version 1 ist
+die Rückseite nicht flach.
 
 **Warnung: Die Änderung der Kilometerzählers kann illegal sein. Außerdem kann
 das Tacho durch das Verändern des EEPROMs (siehe unten) unbrauchbar gemacht
