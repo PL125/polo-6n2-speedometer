@@ -9,6 +9,11 @@ komplett unterschiedliche Tachos sind. Ich weiß nicht, ob es noch andere
 Versionen gibt. Im Folgenden werde ich die mir bekannten zwei Version
 beschreiben, welche ich mit "Version 1" und "Version 2" bezeichne.
 
+**Warnung: Die Änderung der Kilometerzählers kann illegal sein. Außerdem kann
+das Tacho durch das Verändern des EEPROMs (siehe unten) unbrauchbar gemacht
+werden. Ich übernehme keine Haftung für Schäden, die durch die Verwendung von
+Informationen oder dem Code in diesem Repository entstehen.**
+
 
 ## Interner Aufbau
 
@@ -319,4 +324,27 @@ Kilometerstand = 16 km
 Kilometerstand = 123456 km
 40 e2 01 65
 ```
+
+
+## Code
+
+Im Verzeichnis [`arduino/`](./arduino/) ist alles was hier beschrieben ist,
+beispielhaft für den Arduino Uno implementiert. Das Projekt basiert auf
+PlatformIO und kann damit mit `pio run` kompiliert bzw. mit `pio run -t
+upload` auf den Arduino geflasht werden.
+
+Durch die Konstante `TACHO_VERSION` kann die Version (`1` oder `2`) ausgewählt
+werden.
+
+Wenn alles korrekt angeschlossen ist, kann der Code direkt genutzt werden, um
+das EEPROM vollständig auszulesen (als Backup, für den Fall, dass man etwas
+"kaputt" macht), den Kilometerstand auszulesen sowie zu ändern. Dazu müssen die
+entsprechenden Funktionsaufrufe in der `main()` Funktion aus/-einkommentiert und
+angepasst werden.
+
+
+## Lizenz
+
+Die Informationen sowie der Code ist unter der Apache License 2.0 lizensiert.
+Siehe dazu auch [LICENSE](./LICENSE).
 
