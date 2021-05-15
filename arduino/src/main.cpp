@@ -176,6 +176,22 @@ static void dump_memory (void) {
 }
 
 
+// generate tacho signal
+static void generate_tacho_signal (unsigned int speed_kmh) {
+    uint32_t speed_delay_us = 1000000UL*186/200 / speed_kmh;
+
+    for (;;) {
+        digitalWrite(13, HIGH);
+        delay(speed_delay_us/2 / 1000);
+        delayMicroseconds((speed_delay_us/2) % 1000);
+
+        digitalWrite(13, LOW);
+        delay(speed_delay_us/2 / 1000);
+        delayMicroseconds((speed_delay_us/2) % 1000);
+    }
+}
+
+
 void setup (void) {
     Serial.begin(115200);
 
@@ -187,6 +203,7 @@ void setup (void) {
     //print_odometer_data();
     //update_odometer(123456);
     //dump_memory();
+    //generate_tacho_signal(42);
 
     digitalWrite(13, HIGH);
 }
