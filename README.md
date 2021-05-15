@@ -3,8 +3,8 @@
 
 Der Kilometerzähler kann beim Tacho vom Polo 6N2 (eventuell auch beim Lupo
 verwendet) angepasst werden. Folgendes bezieht sich dabei auf das Tacho mit der
-Teilnummer 6N0920804D, wobei es mindestens zwei Versionen des Tachos mit der
-dieser Teilnummer gibt, die eingebaut zwar gleich aussehen, aber ansonsten
+Teilenummer 6N0920804D, wobei es mindestens zwei Versionen des Tachos mit der
+dieser Teilenummer gibt, die eingebaut zwar gleich aussehen, aber ansonsten
 komplett unterschiedliche Tachos sind. Ich weiß nicht, ob es noch andere
 Versionen gibt. Im Folgenden werde ich die mir bekannten zwei Version
 beschreiben, welche ich mit "Version 1" und "Version 2" bezeichne. Version 1
@@ -18,6 +18,9 @@ die Rückseite nicht flach.
 das Tacho durch das Verändern des EEPROMs (siehe unten) unbrauchbar gemacht
 werden. Ich übernehme keine Haftung für Schäden, die durch die Verwendung von
 Informationen oder dem Code in diesem Repository entstehen.**
+
+**Hinweis: Dies ist keine vollständige Anleitung! Es wird ein Grundwissen an
+Elektronik sowie von Mikroprozessoren und deren Programmierung vorausgesetzt!**
 
 
 ## Interner Aufbau
@@ -343,13 +346,20 @@ werden.
 
 Wenn alles korrekt angeschlossen ist, kann der Code direkt genutzt werden, um
 das EEPROM vollständig auszulesen (als Backup, für den Fall, dass man etwas
-"kaputt" macht), den Kilometerstand auszulesen sowie zu ändern. Dazu müssen die
-entsprechenden Funktionsaufrufe in der `main()` Funktion aus/-einkommentiert und
-angepasst werden.
+"kaputt" macht), den Kilometerstand auszulesen sowie zu ändern und ein
+Tachosignal zu generieren. Dazu müssen die entsprechenden Funktionsaufrufe in
+der `main()` Funktion aus/-einkommentiert und angepasst werden.
+
+
+## Weitere Informationen
+
+* [Tacho Pinbelegung](https://www.polotreff.de/html/tacho-pinbelegung-118)
+* [Geschwindigkeitssignal](https://www.vwpolo6n.de/tipsundtricks/infos/geschwindigkeitssignal.htm)
+* [Drehzahlsignal](https://www.vwpolo6n.de/tipsundtricks/infos/drehzahlsignal.htm)
 
 
 ## Lizenz
 
-Die Informationen sowie der Code ist unter der Apache License 2.0 lizensiert.
+Alle Daten in diesem Repository sind unter der Apache License 2.0 lizensiert.
 Siehe dazu auch [LICENSE](./LICENSE).
 
