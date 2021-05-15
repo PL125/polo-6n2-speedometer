@@ -21,8 +21,17 @@ static I2C_eeprom ee(0x50, I2C_DEVICESIZE_24LC04);
 #endif
 
 
-char hex_chars[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+static const char hex_chars[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
+
+static void print_hex4 (uint8_t x) {
+    Serial.print(hex_chars[x & 0x0F]);
+}
+
+static void print_hex8 (uint8_t x) {
+    print_hex4((x>>4) & 0x0F);
+    print_hex4((x>>0) & 0x0F);
+}
 
 
 #if TACHO_VERSION == 1
@@ -31,6 +40,7 @@ char hex_chars[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 
 static void set_odometer (uint32_t x, uint8_t *p) {
     x = (x-14) / 2;
 
+    // see README for description of the encoding
     for (unsigned int i=0; i<8; i++) {
         p[i*2] = ((x >> 3) & 0xFF) + (i < (x & 0x07) ? 1 : 0);
         p[i*2+1] = ((x >> 11) & 0xFF) + (i < (x & 0x07) && ((x & 0x7F8) == 0x7F8) ? 1 : 0);
@@ -41,10 +51,13 @@ static void set_odometer (uint32_t x, uint8_t *p) {
 static int get_odometer (uint32_t *x, uint8_t *p) {
     uint32_t tmp = 14;
 
+    // see README for description of the encoding
     for (int i=0; i<8; i++) {
         tmp += ((uint32_t) p[i*2+0]) << 1;
         tmp += ((uint32_t) p[i*2+1]) << 9;
     }
+
+    // TODO: verify value
 
     *x = tmp;
     return 0;
@@ -55,9 +68,9 @@ static void print_odometer_data (void) {
     uint8_t data[16];
     ee.readBlock(16, data, 16);
 
+    // print 4 bytes each line
     for (int i=0; i<16; i++) {
-        Serial.print(hex_chars[(data[i]>>4) & 0x0F]);
-        Serial.print(hex_chars[(data[i]>>0) & 0x0F]);
+        print_hex8(data[i]);
 
         if (i%4 == 3) {
             Serial.println();
@@ -95,6 +108,7 @@ static void set_odometer (uint32_t x, uint8_t *p) {
         x >>= 8;
     }
 
+    // calculate and set checksum
     p[3] = chksum(p);
 }
 
@@ -106,6 +120,7 @@ static int get_odometer (uint32_t *x, uint8_t *p) {
         val |= p[2-i];
     }
 
+    // calculate and verify checksum
     uint8_t sum = chksum(p);
     if (p[3] != sum) {
         return -1;
@@ -116,28 +131,35 @@ static int get_odometer (uint32_t *x, uint8_t *p) {
 
 // print raw odometer data (all valid values found)
 static void print_odometer_data (void) {
-    for (int i=0; i<mem_size; i+=4) {
-        uint32_t odometer;
-        ee.readBlock(i, (uint8_t*) &odometer, 4);
+    uint8_t odometer_raw[4];
+    uint32_t odometer;
 
-        if (get_odometer(&odometer, (uint8_t*) &odometer) < 0) {
+    for (int i=0; i<mem_size; i+=4) {
+        ee.readBlock(i, odometer_raw, 4);
+
+        // checksum invalid?
+        if (get_odometer(&odometer, odometer_raw) < 0) {
             continue;
         }
 
+        // print address
         for (int j=0; j<3; j++) {
-            Serial.print(hex_chars[(i>>(12-(j+1)*4)) & 0x0F]);
+            print_hex4((i>>(12-(j+1)*4)) & 0x0F);
         }
 
         Serial.print(" odometer: ");
-        for (int j=0; j<8; j++) {
-            Serial.print(hex_chars[(odometer>>(32-(j+1)*4)) & 0x0F]);
-            if (j%2 == 1) {
-                Serial.print(' ');
-            }
+
+        // print raw data
+        for (int j=0; j<4; j++) {
+            print_hex8(odometer_raw[j]);
+            Serial.print(' ');
         }
 
         Serial.print("-> ");
+
+        // print odometer value
         Serial.print(odometer & 0x00FFFFFF);
+
         Serial.println();
     }
 }
@@ -146,10 +168,12 @@ static void print_odometer_data (void) {
 static void update_odometer (uint32_t x) {
     uint8_t data[16];
 
+    // write new value + clear remaining odometer values in this page
     memset(data, 0xFF, 16);
     set_odometer(x, data);
     ee.writeBlock(0*16, data, 16);
 
+    // clear all other pages containing odometer values
     memset(data, 0xFF, 16);
     ee.writeBlock(1*16, data, 16);
     ee.writeBlock(2*16, data, 16);
@@ -163,14 +187,15 @@ static void update_odometer (uint32_t x) {
 
 // dump memory
 static void dump_memory (void) {
-    char buf[8];
     uint8_t data[16];
 
     for (int i=0; i<mem_size; i+=16) {
         ee.readBlock(i, data, 16);
+
+        // print one byte each line
         for (int j=0; j<16; j++) {
-            sprintf(buf, "%02x", data[j]);
-            Serial.println(buf);
+            print_hex8(data[j]);
+            Serial.println();
         }
     }
 }
@@ -179,15 +204,16 @@ static void dump_memory (void) {
 // generate tacho signal
 static void generate_tacho_signal (unsigned int speed_kmh) {
     uint32_t speed_delay_us = 1000000UL*186/200 / speed_kmh;
+    uint32_t speed_delay_us_half = speed_delay_us / 2;
 
     for (;;) {
         digitalWrite(13, HIGH);
-        delay(speed_delay_us/2 / 1000);
-        delayMicroseconds((speed_delay_us/2) % 1000);
+        delay(speed_delay_us_half / 1000);
+        delayMicroseconds(speed_delay_us_half % 1000);
 
         digitalWrite(13, LOW);
-        delay(speed_delay_us/2 / 1000);
-        delayMicroseconds((speed_delay_us/2) % 1000);
+        delay(speed_delay_us_half / 1000);
+        delayMicroseconds(speed_delay_us_half % 1000);
     }
 }
 
