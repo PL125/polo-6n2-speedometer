@@ -46,6 +46,9 @@ zugegriffen wird. Sofern man nach dem Einschalten mindestens eine Sekunde
 wartet, wird aber definitiv nicht mehr auf das EEPROM zugegriffen, sodass man
 selbst auf das EEPROM zugreifen kann.
 
+Das verwendete EEPROM bei Version 1 ist vom Typ 24LC04B, bei Version 2 vom Typ
+24C02.
+
 
 ## Pinbelegung
 
@@ -100,7 +103,7 @@ draufdrücken.
 Bei beiden Versionen haben die Platinen an vielen Stellen freie Punkte in den
 Leiterbahnen, an denen Kabel angelötet werden können. Bei Version 2 könnte man
 auch die Kabel direkt an die Beine des EEPROMs anlöten, jedoch ist dies
-schwieriger. Bei Version 1 kommt man ohne Vollständige Demontage gar nicht an
+schwieriger. Bei Version 1 kommt man ohne vollständige Demontage gar nicht an
 die Beine des EEPROMs.
 
 Im Folgenden ist das grüne Kabel SDA und das gelbe Kabel SCL. Das braune Kabel
@@ -109,12 +112,19 @@ ist Masse.
 
 ### Version 1
 
+Das Kabel für SDA wird an einen der Lötpunkte in der Nähe des EEPROMs angelötet.
+Das Kabel für SCL wird an eine Seite eines Widerstands angelötet, der mit dem
+EEPROM verbunden ist.
+
 SDA | SCL
 :-:|:-:
 ![Lötstellen Version 1 SDA](./img/loetstellen-version-1-SDA.jpg) | ![Lötstellen Version 1 SCL](./img/loetstellen-version-1-SCL.jpg)
 
 
 ### Version 2
+
+Es gibt für SDA und SCL in der Nähe des EEPROMs Lötpunkte, an denen die Kabel
+sehr einfach angelötet werden können.
 
 ![Lötstellen Version 2](./img/loetstellen-version-2.jpg)
 
